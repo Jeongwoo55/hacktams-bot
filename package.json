@@ -1,0 +1,11 @@
+{
+  "name": "hacktams-bot",
+  "version": "1.0.0",
+  "description": "Bot for hackTAMS!",
+  "main": "index.js",
+  "author": "Michael Zhao and Dylan Li",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.4.1"
+  }
+}
