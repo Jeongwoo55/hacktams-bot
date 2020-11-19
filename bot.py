@@ -1,6 +1,12 @@
-from discord.ext.commands import Bot, MinimalHelpCommand
+from discord.ext.commands import Bot, MinimalHelpCommand, wehn_mentioned_or
+import json
+from traceback import print_exc
+import logging
 
-class BetterHelp(MinimalHelpCommand):  # making our own interactive help command to support embeds
+
+class BetterHelp(
+    MinimalHelpCommand
+):  # making our own interactive help command to support embeds
     def get_command_signature(self, command):
         return "{0.clean_prefix}{1.qualified_name} {1.signature}".format(self, command)
 
@@ -203,8 +209,41 @@ class BetterHelp(MinimalHelpCommand):  # making our own interactive help command
         await destination.send(embed=embed)
 
 
-class HackTamsBot(Bot): #inheriting from discord.py's ext.commands.Bot
-  pass
-  
+extensions = ["events", "commands", "music", "verification"]
+
+
+class HackTamsBot(Bot):  # inheriting from discord.py's ext.commands.Bot
+    def __init__(self):
+        config = self.load_json("config.json")
+        super().__init__(
+            name=config["name"],
+            description=config["description"],
+            case_insensitive=True,  # people don't like caps stuff
+            help_command=BetterHelp(),  # to support embeds
+            chunk_guilds_at_startup=True,
+            owner_ids=config["owner_ids"],
+            prefix=when_mentioned_or(config["prefix"]),
+            intents=Intents.all(),  # all intents because its a personal bot
+        )
+        self.config = config
+        self.log = logging.getLogger("Bot")
+
+        for ext in extensions:
+            try:
+                self.load_extension("Cogs." + ext)
+            except:
+                self.log.warning(f"Error loading {ext}:")
+                print_exc()  # mainly just syntx errors
+            else:
+                self.log.info(f"Succesfully loaded {ext}")
+
+    def load_json(self, file): #am I really this lazy?
+        with open(file, "r") as fp:
+            return json.load(fp)
+
+    def run(self, **kw):
+        super().run(self.config["token"], **kw)  # blocking call
+
+
 bot = HackTamsBot()
 bot.run(reconnect=True)
