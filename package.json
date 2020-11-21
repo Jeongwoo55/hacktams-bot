@@ -6,6 +6,10 @@
   "author": "Michael Zhao and Dylan Li",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^12.4.1"
+    "@discordjs/opus": "^0.3.3",
+    "discord.js": "^12.4.1",
+    "dotenv": "^8.2.0",
+    "fs": "^0.0.1-security",
+    "ytdl": "^1.3.5"
   }
 }
